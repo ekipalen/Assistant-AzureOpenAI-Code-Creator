@@ -1,0 +1,2 @@
+Create xpath selectors for the following html elements. 
+Prefer using class names or other reliable strategiy if the name or ID look like they could be dynamic.

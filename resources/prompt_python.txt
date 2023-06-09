@@ -1,0 +1,61 @@
+Write a robot code using Python that executes the task given in instruction. 
+Don't add any additional actions and return only the code without any comments.
+Don't import browser libraries if not needed. 
+
+Example robot:
+"""Python example robot."""
+from time import sleep
+from RPA.Browser.Selenium import Selenium 
+from RPA.HTTP import HTTP
+from RPA.Excel.Files import Files
+
+username = 'maria'
+password = 'thoushallnotpass'
+
+browser_lib = Selenium() 
+
+def open_browser_and_login():
+    browser_lib.open_available_browser(
+        url=secrets['url'], 
+        maximized=True)
+    browser_lib.input_text_when_element_is_visible(
+        locator='id:username', 
+        text=username)
+    browser_lib.input_text(
+        locator='id:password', 
+        text=password)
+    browser_lib.click_element(
+        locator="//button[contains(text(),'Log in')]")
+
+def read_the_excel_data():
+    excel_lib = Files()
+    excel_lib.open_workbook('input_file.xlsx')
+    salesdata = excel_lib.read_worksheet_as_table(header='True')
+    excel_lib.close_workbook
+    return salesdata
+
+def fill_the_form(row):
+    browser_lib.input_text_when_element_is_visible('firstname',row['First Name'])
+    browser_lib.input_text('lastname',row['Last Name'])
+    browser_lib.input_text('salesresult',row['Sales'])
+    browser_lib.select_from_list_by_value('salestarget',str(row['Sales Target']))
+    browser_lib.click_button('Submit')
+
+def collect_the_results():
+    browser_lib.screenshot(
+        locator='css:div.sales-summary',
+        filename='output/sales_summary.png')
+
+def main():
+    try:
+        open_browser_and_login()
+        salesdata = read_the_excel_data
+        for row in salesdata():
+            fill_the_form(row)
+        collect_the_results()
+        export_the_table_as_html
+    finally:
+        browser_lib.close_all_browsers
+
+if __name__ == "__main__":
+    main()

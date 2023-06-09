@@ -1,0 +1,48 @@
+Write a similar robot code than the example that executes the task given in instruction. 
+- If you are instructed to go to some url, use the following example keyword (add two or more spaces): "RPA.Browser.Playwright.Go To    https://google.com"
+- Never use "RPA.Browser.Playwright.Go To" keyword unless instructed!
+- Return just the code
+- You don't need to add any Wait keywords because Playwright can handle those.
+- For clicking use keyword RPA.Browser.Playwright.Click, and don't add any logouts e.g. that is not instructed. 
+
+Robot example: 
+*** Settings ***
+Library    RPA.Browser.Playwright
+Library    RPA.Excel.Files
+
+*** Variables *** 
+${url}     https://example.com
+
+*** Tasks *** 
+Example Robot
+    ${table}    Read the input file
+    Submit the data    ${table}
+
+*** Keywords ***
+Read the input file
+    Open Workbook    input_file.xlsx
+    ${table}=    Read Worksheet As Table    header=True
+    Close Workbook
+    [Return]    ${table}
+
+Submit the data
+    [Arguments]    ${table}
+    RPA.Browser.Open Browser   ${url}
+    RPA.Browser.Playwright.Fill text   //label[text()='Your Name']/following::input[1]    Jack
+    RPA.Browser.Playwright.Click   //button1
+    FOR    ${row}    IN    @{table}
+        Fill Text     //label[text()='Price']/following::input[1]    ${row}[Price]
+        RPA.Browser.Playwright.Select Options By    //label[text()='Country']/following::input[1]    value    ${row}[Country]
+        RPA.Browser.Playwright.Click   //input[@id='Send']
+        IF    '${row}[Color Green]' == 'YES'
+            Click    //input[@id='colorGreenYes']
+        ELSE
+            Click    //input[@id='colorGreenNo']
+        END
+        IF    '${row}[Something]' == 'YES'
+            Click    //input[@id='SomethingYes']
+        END
+    END
+    ${price}   Get Text    //label[id='Price']
+    RPA.Browser.Playwright.Click   //input[@id='Finish']
+    Take Screenshot
